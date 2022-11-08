@@ -3,17 +3,17 @@ from tkinter import ttk
 import threading
 
 import time 
-class node:
+class node:#creamos estructura nodo
     def __init__(self, name, trade, frame=None, nex_node=None):
         self.name = StringVar(value=name)
         self.trade = IntVar(value=trade)
         self.next = nex_node
         if self.next != None and frame != None:
             self.set_label(frame)
-    def set_label(self, frame):
+    def set_label(self, frame):#validador para nodo raiz
         self.card=LabelFrame(frame,text=self.name.get(),background="#2c2c2c",fg='white', width=700, height=300, relief="groove")
         self.card.pack(pady=10,padx=10,ipadx=500,ipady=0)
-        Label(self.card,textvariable=self.name, background="#2c2c2c", fg='lightblue').pack(side=LEFT)
+        Label(self.card,text="Número de transacciones:", background="#2c2c2c", fg='lightblue').pack(side=LEFT)
         Label(self.card,textvariable=self.trade, background="#2c2c2c", fg='lightblue').pack()
 class circle_list:
     
@@ -61,52 +61,6 @@ class circle_list:
             q = q.next;   
         return q
 
-    def check_delivery(self):
-        if self.cab.next != self.cab:
-            q=self.cab.next
-            if q.trade.get()>0 and self.max_count < 5:
-                q.trade.set(q.trade.get()-1)
-                self.max_count += 1
-            
-            elif q.trade.get() == 0:
-                q.card.destroy()
-                self.max_count = 0                    
-                self.cab.next = self.cab.next.next                
-                del q
-            else:
-                q.card.destroy()
-                self.max_count = 0
-                q.card.destroy()  
-                q.set_label(self.frame_tail)
-                self.cab.next = self.cab.next.next                
-                q.next = self.cab
-                lastItem = self.search_last()
-                lastItem.next = q
-            time.sleep(1)
-
-    def checkTail(self):
-        while self.cab.next != self.cab:
-            q = self.cab.next
-            self.cab.next = self.cab.next.next            
-            if q.trade.get() > 5 :
-                limit = 5
-            else:
-                limit = q.trade.get()
-            for i in range(limit):
-                print(q.name.get(),q.trade.get())
-                q.trade.set(q.trade.get()-1)
-                
-                time.sleep(1)
-                
-            q.card.destroy()            
-            if limit > 0 : 
-                print('entro')
-                q.set_label(self.frame_tail)                
-                q.next = self.cab
-                lastItem = self.search_last()
-                lastItem.next = q
-            else:
-                del q;
     def check_tail(self):
         if self.cab.next != self.cab:
             q=self.cab.next
@@ -129,50 +83,33 @@ class circle_list:
                 lastItem = self.search_last()
                 lastItem.next = q
             time.sleep(1)  
-        self.window.after(2000,self.check_tail)
-    # def check_tail_before(self):
-    #     t = threading.Thread(target=self.addNode)
-    #     t.start()
-    #     self.check_cicle(t)
-    # def check_cicle(self,t):
-    #     self.window.after(3000,self.check_hilo,t)
-    # def check_hilo(self,t):
-    #     if not t.is_alive():
-    #         pass
-    #     else:
-    #         check_cicle
-    
-    # def get_tail(self):
-    #     pass
+        self.window.after(1000,self.check_tail)
+    def check_tail_before(self):
+        t = threading.Thread(target=self.check_tail)
+        t.start()
+        self.check_cicle(t)
+    def check_cicle(self,t):
+        self.window.after(1000,self.check_hilo,t)
+    def check_hilo(self,t):
+        if t.is_alive():
+            self.window.after(1000,self.check_hilo,t)
+
+
 
 if __name__ == '__main__':
-    # switch = 1
-    # mlist = circle_list() 
-
-    # print('Bienvenido a la lista circular!!\n')
-    # while switch != 0:
-    #     switch = int(input('Seleccione una opción para continuar:\n 0. salir.\n 1. Insertar un nodo \n 2. Imprimir contenido \n 3. Atenter cola\n'))
-    #     if switch == 1 :
-    #         name = input('Ingrese el nombre del titular de la cuenta:\n')
-    #         trade = input('Ingrese el numero de transacciones arealizar:\n')
-    #         mlist.addNode(name,trade)
-    #     elif switch == 2 :
-    #         mlist.print_all()
-    #     elif switch == 3 :
-    #         mlist.checkTail()
     window = Tk()
     window.geometry('800x600')
     aplication = circle_list(window)
-    aplication.name.set(value='oscar')
+    aplication.name.set(value='Oscar')
     aplication.trades.set(value=6)
     aplication.addNode()
-    aplication.name.set(value='oscar')
+    aplication.name.set(value='David')
     aplication.trades.set(value=3)
     aplication.addNode()
-    aplication.name.set(value='oscar')
+    aplication.name.set(value='Laura')
     aplication.trades.set(value=5)
     aplication.addNode()  
-    window.after(2000,aplication.check_tail)
+    window.after(1000,aplication.check_tail_before)
     window.mainloop()
         
     
